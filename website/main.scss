@@ -6,6 +6,8 @@
 @import './syntax.scss';
 @import url('https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono');
 
+$githubGreen: #39aa56;
+
 .sans-serif {
   font-family:
     -apple-system,
@@ -432,4 +434,15 @@ svg {
 
 .newCell {
   margin: 50px 10px;
+}
+
+.clone {
+  background: $githubGreen;
+  color: #fff;
+  border: none;
+}
+
+.clone:hover {
+  color: #fff;
+  background: darken($githubGreen, 10%);
 }
