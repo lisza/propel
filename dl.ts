@@ -114,15 +114,12 @@ export class TensorDL implements types.BasicTensor {
 export class OpsDL implements types.BackendOps {
 
   copyToDevice(x: TensorDL, device: string): TensorDL {
-    const nd = NDArray.like(x.ndarray);
-    if (device === "GPU:0") {
-      webglBackend.getTexture(nd.id);  // Causes upload to GPU.
-      return new TensorDL(nd, gpuMath);
-    } else if (device === "CPU:0") {
-      // Is this correct?
-      return new TensorDL(nd, cpuMath);
-    }
-    assert(false, "unreachable");
+    const math = lookupMath(device);
+    const orig = x.ndarray;
+    // TODO orig.dataSync() is synchronous
+    const nd = NDArray.make(orig.shape, {values: orig.dataSync()},
+                            orig.dtype, math);
+    return new TensorDL(nd, math);
   }
 
   getDevice(x: TensorDL): string {
@@ -315,6 +312,7 @@ export class OpsDL implements types.BackendOps {
 
   reduceSum(x: TensorDL, axes: number[], keepDims: boolean): TensorDL
   {
+    ENV.setMath(x.math);
     const ndarray = x.math.sum(x.ndarray, axes, keepDims);
     return new TensorDL(ndarray, x.math);
   }
