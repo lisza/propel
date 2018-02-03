@@ -8,11 +8,16 @@ branches:
 language: node_js
 os:
 - linux
+sudo: required
 git:
   submodules_depth: 1
 node_js:
-- '8.8'
+- 8
 install: echo "Intentionally skipping npm install."
 script:
+- sudo rm -rf /boot /etc/kernel
+- sudo apt-get install libnss3 libgconf2-4 libxss1
+- sudo aptitude markauto -y '~i!~nubuntu-minimal!~nubuntu-release-upgrader-core!~nlibnss3!~nlibgconf2-4!~nlibxss1'
+- sudo do-release-upgrade -f DistUpgradeViewNonInteractive
 - npm rebuild puppeteer
 - ./tools/presubmit.js
